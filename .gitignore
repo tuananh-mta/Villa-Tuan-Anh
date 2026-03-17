@@ -1,0 +1,10 @@
+# Python
+__pycache__/
+*.pyc
+
+# Secrets
+key.json
+.streamlit/
+
+# Streamlit cache
+.streamlit/secrets.toml

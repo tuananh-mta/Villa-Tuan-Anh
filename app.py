@@ -1,0 +1,286 @@
+import streamlit as st
+import pandas as pd
+import re
+import gspread
+from google.oauth2.service_account import Credentials
+
+# =============================
+# CONFIG
+# =============================
+st.set_page_config(page_title="Villa Finder PRO", layout="wide")
+st.title("🏡 Villa Finder MTA PRO")
+
+# =============================
+# GOOGLE SHEET (PRIVATE)
+# =============================
+SHEET_ID = "1lxWjikL1b_wg0NW9zjsnEXK9DY3FgtHXKrbwHn7Rs4o"
+SHEET_NAME = "Đang trống"
+
+@st.cache_data
+def load_data():
+    scope = [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive"
+    ]
+
+    creds = Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
+        scopes=scope
+    )
+
+    client = gspread.authorize(creds)
+
+    sheet = client.open_by_key(SHEET_ID)
+    ws = sheet.worksheet(SHEET_NAME)
+
+    data = ws.get_all_records()
+    df = pd.DataFrame(data)
+
+    df.columns = df.columns.str.strip()
+
+    return df
+
+df = load_data()
+
+# =============================
+# FIND COLUMN
+# =============================
+def find_col(keys):
+    for col in df.columns:
+        for k in keys:
+            if k.lower() in col.lower():
+                return col
+    return None
+
+COL_TYPE = find_col(["loại"])
+COL_PRICE = find_col(["usd"])
+COL_BED = find_col(["phòng ngủ"])
+COL_AREA = find_col(["diện tích", "m2"])
+COL_FURNITURE = find_col(["nội thất"])
+COL_ADDRESS = find_col(["địa chỉ"])
+COL_COMPOUND = find_col(["compound"])
+COL_STATUS = find_col(["trống"])
+
+# =============================
+# CLEAN PRICE (FIX 4.000)
+# =============================
+def clean_price(x):
+    if pd.isna(x):
+        return None
+
+    x = str(x)
+    x = x.replace(".", "").replace(",", "")
+
+    match = re.search(r"\$(\d+)", x)
+    if match:
+        return int(match.group(1))
+
+    nums = re.findall(r"\d{3,6}", x)
+    if nums:
+        return max([int(n) for n in nums])
+
+    return None
+
+
+def format_price(x):
+    if pd.isna(x):
+        return ""
+    return f"{int(x):,}".replace(",", ".") + " USD"
+
+# =============================
+# CLEAN
+# =============================
+def clean_bed(x):
+    if pd.isna(x):
+        return None
+    nums = re.findall(r"\d+", str(x))
+    return int(nums[0]) if nums else None
+
+
+def clean_area(x):
+    if pd.isna(x):
+        return None
+
+    x = str(x).lower().strip()
+
+    if "#n/a" in x:
+        return None
+
+    match = re.search(r"(\d{2,4})\s*m2", x)
+    if match:
+        return int(match.group(1))
+
+    return None
+
+
+def normalize_furniture(x):
+    if pd.isna(x):
+        return ""
+
+    x = str(x).lower()
+
+    if "full" in x:
+        return "Full NT"
+    if "knt" in x:
+        return "KNT"
+    if "ntcb" in x:
+        return "NTCB"
+
+    return ""
+
+
+def has_pool(row):
+    return "hồ bơi" in str(row).lower()
+
+
+def has_garden(row):
+    return "sân vườn" in str(row).lower()
+
+
+def get_status(x):
+    if pd.isna(x):
+        return "Đang trống"
+
+    x = str(x).lower()
+
+    if "đang trống" in x:
+        return "Đang trống"
+
+    if re.search(r"\d{1,2}/\d{1,2}/\d{2,4}", x):
+        return "Sắp trống"
+
+    return "Đang trống"
+
+# =============================
+# PARSE DATA
+# =============================
+df["price"] = df[COL_PRICE].apply(clean_price) if COL_PRICE else None
+df["bed"] = df[COL_BED].apply(clean_bed) if COL_BED else None
+df["area"] = df[COL_AREA].apply(clean_area) if COL_AREA else None
+df["furniture"] = df[COL_FURNITURE].apply(normalize_furniture) if COL_FURNITURE else ""
+
+df["pool"] = df.apply(lambda x: has_pool(x.astype(str)), axis=1)
+df["garden"] = df.apply(lambda x: has_garden(x.astype(str)), axis=1)
+df["status"] = df[COL_STATUS].apply(get_status) if COL_STATUS else "Đang trống"
+
+# =============================
+# SIDEBAR FILTER
+# =============================
+st.sidebar.header("🔎 Bộ lọc")
+
+status_filter = st.sidebar.selectbox(
+    "Trạng thái",
+    ["Tất cả", "Đang trống", "Sắp trống"]
+)
+
+type_filter = st.sidebar.selectbox(
+    "Loại",
+    ["Tất cả", "Villa", "Compound", "Airbnb", "House", "MB"]
+)
+
+min_price = int(df["price"].min() or 0)
+max_price = int(df["price"].max() or 5000)
+
+price_range = st.sidebar.slider(
+    "💰 Khoảng giá",
+    min_price,
+    max_price,
+    (min_price, max_price)
+)
+
+bedroom = st.sidebar.selectbox(
+    "🛏 Phòng ngủ",
+    ["Tất cả", "2+", "3+", "4+", "5+", "6+", "7+", "8+"]
+)
+
+furniture_filter = st.sidebar.selectbox(
+    "🪑 Nội thất",
+    ["Tất cả", "Full NT", "KNT", "NTCB"]
+)
+
+pool = st.sidebar.checkbox("🏊 Hồ bơi")
+garden = st.sidebar.checkbox("🌿 Sân vườn")
+
+# =============================
+# FILTER LOGIC
+# =============================
+filtered = df.copy()
+
+if status_filter != "Tất cả":
+    filtered = filtered[filtered["status"] == status_filter]
+
+if type_filter != "Tất cả" and COL_TYPE:
+    filtered = filtered[
+        filtered[COL_TYPE].astype(str).str.contains(type_filter, case=False, na=False)
+    ]
+
+filtered = filtered[
+    (filtered["price"] >= price_range[0]) &
+    (filtered["price"] <= price_range[1])
+]
+
+if bedroom != "Tất cả":
+    bed_min = int(bedroom.replace("+", ""))
+    filtered = filtered[filtered["bed"] >= bed_min]
+
+if furniture_filter != "Tất cả":
+    filtered = filtered[filtered["furniture"] == furniture_filter]
+
+if pool:
+    filtered = filtered[filtered["pool"] == True]
+
+if garden:
+    filtered = filtered[filtered["garden"] == True]
+
+filtered = filtered.sort_values(by="price")
+
+st.write(f"🔍 {len(filtered)} căn phù hợp")
+
+# =============================
+# DISPLAY
+# =============================
+for i, row in filtered.head(20).iterrows():
+    st.markdown("---")
+
+    address = row[COL_ADDRESS] if COL_ADDRESS else ""
+    compound = row[COL_COMPOUND] if COL_COMPOUND else ""
+
+    price_text = format_price(row["price"])
+    bed = int(row["bed"]) if pd.notnull(row["bed"]) else ""
+    area = int(row["area"]) if pd.notnull(row["area"]) else ""
+
+    st.write(f"🏡 {address}")
+    st.write(f"💰 {price_text} | 🛏 {bed} PN | 📐 {area} m2")
+
+    if row["furniture"]:
+        st.write(f"🪑 {row['furniture']}")
+
+    if row["pool"]:
+        st.write("🏊 Hồ bơi")
+
+    if row["garden"]:
+        st.write("🌿 Sân vườn")
+
+    if compound:
+        st.write(f"🏢 {compound}")
+
+    # COPY ZALO
+    msg = f"""🏡 {address}
+
+💰 {price_text}
+🛏 {bed} PN
+📐 {area} m2"""
+
+    if row["furniture"]:
+        msg += f"\n🪑 {row['furniture']}"
+
+    if row["pool"]:
+        msg += "\n🏊 Hồ bơi"
+
+    if row["garden"]:
+        msg += "\n🌿 Sân vườn"
+
+    if compound:
+        msg += f"\n🏢 {compound}"
+
+    st.text_area("📋 Copy gửi Zalo", msg.strip(), key=i, height=140)
