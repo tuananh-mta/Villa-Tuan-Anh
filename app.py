@@ -6,31 +6,10 @@ import gspread
 from google.oauth2.service_account import Credentials
 
 # =============================
-# 1. CẤU HÌNH & ĐĂNG NHẬP
+# 1. CẤU HÌNH GIAO DIỆN
 # =============================
 st.set_page_config(page_title="Villa CRM PRO", layout="wide")
 st.title("🏡 Giỏ Hàng Villa Tuấn Anh")
-
-USERS = {
-    "sale1": {"password": "123", "role": "basic"},
-    "admin": {"password": "adm", "role": "admin"},
-}
-
-if "user" not in st.session_state:
-    st.sidebar.title("🔐 Đăng nhập")
-    user_in = st.sidebar.text_input("Tài khoản")
-    pw_in = st.sidebar.text_input("Mật khẩu", type="password")
-    if st.sidebar.button("Đăng nhập"):
-        if user_in in USERS and USERS[user_in]["password"] == pw_in:
-            st.session_state["user"] = user_in
-            st.session_state["role"] = USERS[user_in]["role"]
-            st.rerun()
-        else:
-            st.sidebar.error("❌ Sai tài khoản hoặc mật khẩu")
-    st.stop()
-
-user = st.session_state["user"]
-role = st.session_state["role"]
 
 # =============================
 # 2. TẢI DỮ LIỆU (TTL 10 PHÚT)
@@ -61,15 +40,15 @@ if df_raw.empty:
 # 3. MAPPING CỘT & CLEANING
 # =============================
 df = df_raw.copy()
-# --- SỬA LỖI TẠI ĐÂY: Chuyển COL_TYPE sang Cột B (Index 1) ---
 COL_TYPE = df.columns[1]      # Cột B: Loại hình
-COL_PRICE = df.columns[3]     # Giá
+COL_PRICE = df.columns[3]     # Cột D: Giá
 COL_STATUS_G = df.columns[6]  # Cột G: Ngày trống
-COL_BED = df.columns[7]       # PN
+COL_BED = df.columns[7]       # Cột H: PN
 COL_FURNI_I = df.columns[8]   # Cột I: Nội thất
-COL_AREA = df.columns[10]     # Diện tích
-COL_STREET = df.columns[12]   # Tên đường
-COL_ADDRESS = df.columns[13]  # Địa chỉ
+COL_AREA = df.columns[10]     # Cột K: Diện tích
+COL_STREET = df.columns[12]   # Cột M: Tên đường
+COL_ADDRESS = df.columns[13]  # Cột N: Địa chỉ
+COL_IMAGE_O = df.columns[14]  # Cột O: Hình ảnh
 
 def clean_num(x):
     if pd.isna(x) or x == "": return None
@@ -78,12 +57,9 @@ def clean_num(x):
 
 def process_status_logic(x):
     val = str(x).strip().lower()
-    if val in ["#n/a", "nan", "", "null"]:
-        return None, None
-    if "đang trống" in val:
-        return "✅ Đang trống", ""
-    if re.search(r"\d", val):
-        return "⏳ Sắp trống", str(x).strip()
+    if val in ["#n/a", "nan", "", "null"]: return None, None
+    if "đang trống" in val: return "✅ Đang trống", ""
+    if re.search(r"\d", val): return "⏳ Sắp trống", str(x).strip()
     return "✅ Đang trống", ""
 
 def process_furni(x):
@@ -93,18 +69,19 @@ def process_furni(x):
     if "ntcb" in val: return "NTCB"
     return "Khác"
 
-# Apply xử lý
+# Thực thi xử lý dữ liệu
 df["price"] = df[COL_PRICE].apply(clean_num)
 df["bed"] = df[COL_BED].apply(clean_num)
 df["area"] = df[COL_AREA].apply(clean_num)
-
 status_results = df[COL_STATUS_G].apply(process_status_logic)
 df["status_label"] = [item[0] for item in status_results]
 df["status_date"] = [item[1] for item in status_results]
 df["furniture"] = df[COL_FURNI_I].apply(process_furni)
 
+# Loại bỏ dòng không có trạng thái trống hợp lệ
 df = df.dropna(subset=["status_label"])
 
+# Tìm kiếm tiện ích
 combined_text = df.astype(str).apply(lambda x: ' '.join(x), axis=1).str.lower()
 df["pool"] = combined_text.str.contains("hồ bơi|bể bơi", na=False)
 df["garden"] = combined_text.str.contains("sân vườn", na=False)
@@ -112,56 +89,50 @@ df["garden"] = combined_text.str.contains("sân vườn", na=False)
 # =============================
 # 4. BỘ LỌC (SIDEBAR)
 # =============================
-st.sidebar.header(f"👤 {user}")
-if role == "admin":
-    st_filter = st.sidebar.selectbox("Ngày trống", ["Tất cả", "✅ Đang trống", "⏳ Sắp trống"])
-else:
-    st_filter = "✅ Đang trống"
+st.sidebar.header("🔍 Bộ lọc tìm kiếm")
 
-# --- CẬP NHẬT: Danh sách Loại hình đúng theo yêu cầu ---
+# Mặc định cho phép lọc cả Đang trống và Sắp trống (Quyền Admin cũ)
+st_filter = st.sidebar.selectbox("Ngày trống", ["Tất cả", "✅ Đang trống", "⏳ Sắp trống"])
+
 type_filter = st.sidebar.selectbox("Loại hình", ["Tất cả", "Villa", "House", "Airbnb", "MB", "Office"])
-
 price_range = st.sidebar.slider("Khoảng giá (USD)", 0, int(df["price"].max() or 5000), (0, int(df["price"].max() or 5000)))
 bed_filter = st.sidebar.selectbox("Phòng ngủ", ["Tất cả", "2+", "3+", "4+", "5+", "6+"])
 furni_filter = st.sidebar.selectbox("Nội thất", ["Tất cả", "Full NT", "KNT", "NTCB"])
 
-# Logic lọc
+# Thực hiện lọc
 f = df.copy()
-if role == "basic":
-    f = f[f["status_label"] == "✅ Đang trống"]
-elif st_filter != "Tất cả":
+
+if st_filter != "Tất cả": 
     f = f[f["status_label"] == st_filter]
 
-if type_filter != "Tất cả":
+if type_filter != "Tất cả": 
     f = f[f[COL_TYPE].astype(str).str.contains(type_filter, case=False, na=False)]
 
 f = f[(f["price"] >= price_range[0]) & (f["price"] <= price_range[1])]
 
 if bed_filter != "Tất cả":
-    b_min = int(bed_filter.replace("+", ""))
-    f = f[f["bed"] >= b_min]
+    f = f[f["bed"] >= int(bed_filter.replace("+", ""))]
 
-if furni_filter != "Tất cả":
+if furni_filter != "Tất cả": 
     f = f[f["furniture"] == furni_filter]
 
 if st.sidebar.checkbox("🏊 Hồ bơi"): f = f[f["pool"] == True]
 if st.sidebar.checkbox("🌿 Sân vườn"): f = f[f["garden"] == True]
 
 # =============================
-# 5. HIỂN THỊ KẾT QUẢ (THU GỌN)
+# 5. HIỂN THỊ KẾT QUẢ
 # =============================
 st.markdown(f"🔍 Tìm thấy **{len(f)}** căn phù hợp")
 
 for i, row in f.head(50).iterrows():
-    display_name = row[COL_ADDRESS] if role == "admin" else row[COL_STREET]
+    # Hiển thị địa chỉ cụ thể (Mặc định quyền cao nhất)
+    display_name = row[COL_ADDRESS]
     price_val = f"{int(row['price']):,}".replace(",", ".") + " USD" if pd.notna(row['price']) else "Liên hệ"
     
-    # Chuẩn bị nhãn Ngày trống
     status_display = row["status_label"]
     if row["status_label"] == "⏳ Sắp trống" and row["status_date"]:
         status_display = f"{row['status_label']} ({row['status_date']})"
 
-    # NỘI DUNG TRONG KHUNG COPY (Giữ nguyên đầy đủ)
     copy_text = f"""🏡 {display_name} 💰 Giá: {price_val}
 🛏 {int(row['bed']) if pd.notna(row['bed']) else 'N/A'} PN | 📐 {int(row['area']) if pd.notna(row['area']) else 'N/A'} m2
 🪑 Nội thất: {row['furniture']}
@@ -169,10 +140,21 @@ for i, row in f.head(50).iterrows():
 {"🏊 Hồ bơi" if row['pool'] else ""} {"🌿 Sân vườn" if row['garden'] else ""}""".strip()
 
     with st.container():
-        # Chỉ hiển thị duy nhất Tiêu đề và Khung Copy để thu gọn diện tích
         st.subheader(f"🏠 {display_name}")
         
-        # Khung code (chứa toàn bộ thông tin) giúp copy cực nhanh trên mobile
-        st.code(copy_text, language="text")
+        # XỬ LÝ ALBUM ẢNH (Giữ nguyên logic Phiên bản 6)
+        raw_img_links = str(row[COL_IMAGE_O]).strip()
+        if raw_img_links and raw_img_links.lower() != "nan":
+            list_links = [link.strip() for link in raw_img_links.split(",") if link.strip().startswith("http")]
             
+            if len(list_links) > 1:
+                tabs = st.tabs([f"Ảnh {idx+1}" for idx in range(len(list_links))])
+                for idx, link in enumerate(list_links):
+                    with tabs[idx]:
+                        st.image(link, use_container_width=True)
+            elif len(list_links) == 1:
+                st.image(list_links[0], use_container_width=True)
+        
+        # Khung copy (Hoạt động tốt trên mobile)
+        st.code(copy_text, language="text")
         st.divider()
