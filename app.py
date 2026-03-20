@@ -5,6 +5,32 @@ import datetime
 import gspread
 from google.oauth2.service_account import Credentials
 
+# =============================
+# 1. CẤU HÌNH & ĐĂNG NHẬP
+# =============================
+st.set_page_config(page_title="Villa CRM PRO", layout="wide")
+st.title("🏡 Giỏ Hàng Villa Tuấn Anh")
+
+USERS = {
+    "sale1": {"password": "123", "role": "basic"},
+    "admin": {"password": "adm", "role": "admin"},
+}
+
+if "user" not in st.session_state:
+    st.sidebar.title("🔐 Đăng nhập")
+    user_in = st.sidebar.text_input("Tài khoản")
+    pw_in = st.sidebar.text_input("Mật khẩu", type="password")
+    if st.sidebar.button("Đăng nhập"):
+        if user_in in USERS and USERS[user_in]["password"] == pw_in:
+            st.session_state["user"] = user_in
+            st.session_state["role"] = USERS[user_in]["role"]
+            st.rerun()
+        else:
+            st.sidebar.error("❌ Sai tài khoản hoặc mật khẩu")
+    st.stop()
+
+user = st.session_state["user"]
+role = st.session_state["role"]
 
 # =============================
 # 2. TẢI DỮ LIỆU (TTL 10 PHÚT)
