@@ -13,7 +13,7 @@ st.title("🏡 Giỏ Hàng Villa Tuấn Anh")
 
 USERS = {
     "sale1": {"password": "123", "role": "basic"},
-    "admin": {"password": "adminmta", "role": "admin"},
+    "admin": {"password": "adm", "role": "admin"},
 }
 
 if "user" not in st.session_state:
@@ -61,7 +61,8 @@ if df_raw.empty:
 # 3. MAPPING CỘT & CLEANING
 # =============================
 df = df_raw.copy()
-COL_TYPE = df.columns[2]      # Loại
+# --- SỬA LỖI TẠI ĐÂY: Chuyển COL_TYPE sang Cột B (Index 1) ---
+COL_TYPE = df.columns[1]      # Cột B: Loại hình
 COL_PRICE = df.columns[3]     # Giá
 COL_STATUS_G = df.columns[6]  # Cột G: Ngày trống
 COL_BED = df.columns[7]       # PN
@@ -117,7 +118,9 @@ if role == "admin":
 else:
     st_filter = "✅ Đang trống"
 
-type_filter = st.sidebar.selectbox("Loại hình", ["Tất cả", "Villa", "Compound", "Airbnb", "House"])
+# --- CẬP NHẬT: Danh sách Loại hình đúng theo yêu cầu ---
+type_filter = st.sidebar.selectbox("Loại hình", ["Tất cả", "Villa", "House", "Airbnb", "MB", "Office"])
+
 price_range = st.sidebar.slider("Khoảng giá (USD)", 0, int(df["price"].max() or 5000), (0, int(df["price"].max() or 5000)))
 bed_filter = st.sidebar.selectbox("Phòng ngủ", ["Tất cả", "2+", "3+", "4+", "5+", "6+"])
 furni_filter = st.sidebar.selectbox("Nội thất", ["Tất cả", "Full NT", "KNT", "NTCB"])
@@ -130,7 +133,7 @@ elif st_filter != "Tất cả":
     f = f[f["status_label"] == st_filter]
 
 if type_filter != "Tất cả":
-    f = f[f[COL_TYPE].str.contains(type_filter, case=False, na=False)]
+    f = f[f[COL_TYPE].astype(str).str.contains(type_filter, case=False, na=False)]
 
 f = f[(f["price"] >= price_range[0]) & (f["price"] <= price_range[1])]
 
@@ -171,6 +174,5 @@ for i, row in f.head(50).iterrows():
         
         # Khung code (chứa toàn bộ thông tin) giúp copy cực nhanh trên mobile
         st.code(copy_text, language="text")
- 
             
         st.divider()
