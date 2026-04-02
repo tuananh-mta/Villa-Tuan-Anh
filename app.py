@@ -81,10 +81,31 @@ df["furniture"] = df[COL_FURNI_I].apply(process_furni)
 # Loại bỏ dòng không có trạng thái trống hợp lệ
 df = df.dropna(subset=["status_label"])
 
-# Tìm kiếm tiện ích
-combined_text = df.astype(str).apply(lambda x: ' '.join(x), axis=1).str.lower()
-df["pool"] = combined_text.str.contains("hồ bơi|bể bơi", na=False)
-df["garden"] = combined_text.str.contains("sân vườn", na=False)
+# =============================
+# 3. MAPPING CỘT & CLEANING (Đã fix lỗi dòng 85)
+# =============================
+
+# ... (Giữ nguyên phần code phía trên) ...
+
+# Loại bỏ dòng không có trạng thái trống hợp lệ
+df = df.dropna(subset=["status_label"])
+
+# --- ĐOẠN SỬA LỖI TẠI ĐÂY ---
+def create_search_string(row):
+    # Chuyển tất cả các cột trong hàng thành chuỗi, loại bỏ NaN, nối lại bằng dấu cách
+    return " ".join(row.fillna("").astype(str)).lower()
+
+# Tạo một Series tạm để tìm kiếm mà không làm thay đổi kiểu dữ liệu các cột gốc của df
+search_series = df.apply(create_search_string, axis=1)
+
+df["pool"] = search_series.str.contains("hồ bơi|bể bơi", na=False)
+df["garden"] = search_series.str.contains("sân vườn", na=False)
+# ----------------------------
+
+# =============================
+# 4. BỘ LỌC (SIDEBAR)
+# =============================
+# ... (Phần còn lại giữ nguyên) ...
 
 # =============================
 # 4. BỘ LỌC (SIDEBAR)
