@@ -103,26 +103,35 @@ df["garden"] = search_series.str.contains("sân vườn", na=False)
 # ----------------------------
 
 # =============================
-# 4. BỘ LỌC (SIDEBAR)
 # =============================
-# ... (Phần còn lại giữ nguyên) ...
-
-# =============================
-# 4. BỘ LỌC (SIDEBAR)
+# 4. BỘ LỌC (SIDEBAR & SEARCH)
 # =============================
 st.sidebar.header("🔍 Bộ lọc tìm kiếm")
 
-# Mặc định cho phép lọc cả Đang trống và Sắp trống (Quyền Admin cũ)
-st_filter = st.sidebar.selectbox("Ngày trống", ["Tất cả", "✅ Đang trống", "⏳ Sắp trống"])
+# --- MỚI: Thêm ô tìm kiếm địa chỉ/tên đường ---
+search_query = st.sidebar.text_input("📍 Tìm địa chỉ, tên đường...", placeholder="Ví dụ: Võ Nguyên Giáp")
 
+# Các bộ lọc cũ giữ nguyên
+st_filter = st.sidebar.selectbox("Ngày trống", ["Tất cả", "✅ Đang trống", "⏳ Sắp trống"])
 type_filter = st.sidebar.selectbox("Loại hình", ["Tất cả", "Villa", "House", "Airbnb", "MB", "Office"])
 price_range = st.sidebar.slider("Khoảng giá (USD)", 0, int(df["price"].max() or 5000), (0, int(df["price"].max() or 5000)))
 bed_filter = st.sidebar.selectbox("Phòng ngủ", ["Tất cả", "2+", "3+", "4+", "5+", "6+"])
 furni_filter = st.sidebar.selectbox("Nội thất", ["Tất cả", "Full NT", "KNT", "NTCB"])
 
-# Thực hiện lọc
+# THỰC HIỆN LỌC
 f = df.copy()
 
+# 1. Lọc theo từ khóa địa chỉ (MỚI)
+if search_query:
+    # Tìm kiếm trong cả cột Tên đường và Địa chỉ cụ thể
+    # case=False để không phân biệt hoa thường
+    condition = (
+        f[COL_STREET].astype(str).str.contains(search_query, case=False, na=False) | 
+        f[COL_ADDRESS].astype(str).str.contains(search_query, case=False, na=False)
+    )
+    f = f[condition]
+
+# 2. Lọc theo các tiêu chí khác (Giữ nguyên logic cũ của bạn)
 if st_filter != "Tất cả": 
     f = f[f["status_label"] == st_filter]
 
