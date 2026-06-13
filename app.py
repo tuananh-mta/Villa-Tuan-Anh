@@ -9,8 +9,8 @@ from google.oauth2.service_account import Credentials
 # CẤU HÌNH THÔNG TIN THƯƠNG HIỆU
 # =============================
 PHONE_NUMBER = "0909108814"
-# Anh thay link ảnh avatar mới của anh vào giữa 2 dấu ngoặc kép dưới đây:
-AVATAR_URL = "https://i.ibb.co/DHVT21hs/471499443-122201836538216145-2788071352566679431-n-1.jpg" 
+# Đã cập nhật link ảnh đại diện mới của anh
+AVATAR_URL = "https://i.ibb.co/DHVT21hs/471499443-122201836538216145-2788071352566679431-n-1.jpg"
 
 # =============================
 # 1. CẤU HÌNH GIAO DIỆN & STYLE TAILWIND (NEXT.JS)
@@ -49,17 +49,19 @@ div[data-testid="stVerticalBlockBorderWrapper"]:hover {
     border-color: #f97316 !important;
 }
 
-/* ÉP TOÀN BỘ CHỮ BÊN TRONG CARD SẢN PHẨM SANG MÀU TRẮNG SÁNG */
+/* ÉP TOÀN BỘ CHỮ BÊN TRONG CARD SẢN PHẨM VÀ CÁC THÀNH PHẦN KHÁC SANG MÀU TRẮNG TINH */
 div[data-testid="stVerticalBlockBorderWrapper"] p,
 div[data-testid="stVerticalBlockBorderWrapper"] span,
 div[data-testid="stVerticalBlockBorderWrapper"] label,
-div[data-testid="stVerticalBlockBorderWrapper"] li {
+div[data-testid="stVerticalBlockBorderWrapper"] li,
+div[data-testid="stVerticalBlockBorderWrapper"] div,
+.stMarkdown p, .stMarkdown span, .stMarkdown li {
     color: #ffffff !important;
     font-weight: 500 !important;
 }
 
-/* Tiêu đề tên căn nhà (H4) màu trắng đậm nổi bật */
-div[data-testid="stVerticalBlockBorderWrapper"] h4 {
+/* Tiêu đề tên căn nhà (H4) và tiêu đề kết quả (H3) màu trắng đậm nổi bật */
+div[data-testid="stVerticalBlockBorderWrapper"] h4, h3, h2, h1, .stMarkdown h4 {
     color: #ffffff !important;
     font-weight: 700 !important;
 }
@@ -112,8 +114,10 @@ div[data-testid="stVerticalBlockBorderWrapper"] h4 {
     align-items: center;
     text-align: center;
 }
-.hero-profile div, .hero-profile p {
-    color: #09090b !important; /* Đảm bảo chữ trên nền banner cam vẫn có màu đen để dễ đọc */
+/* Giữ chữ trên nền banner cam có màu tối để tương phản tốt, dễ đọc */
+.hero-profile div, .hero-profile p, .hero-profile span {
+    color: #09090b !important; 
+    font-weight: 600 !important;
 }
 .profile-avatar {
     width: 90px;
@@ -164,7 +168,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] h4 {
 .badge-price {
     font-size: 1.125rem;
     font-weight: 700;
-    color: #f97316 !important; /* Giữ nguyên màu cam thương hiệu cho phần giá */
+    color: #f97316 !important; /* Giữ màu cam thương hiệu nổi bật riêng cho giá tiền */
     margin-bottom: 0.5rem;
 }
 
@@ -379,7 +383,7 @@ for index, (i, row) in enumerate(f.head(50).iterrows()):
             else:
                 st.image("https://images.unsplash.com/photo-1600596542815-ffad4c1539a9", use_container_width=True)
             
-            # 2. Thông tin
+            # 2. Thông tin sản phẩm
             st.markdown(f"#### 🏠 {display_name}")
             st.html(f'<div class="badge-price">💰 {price_val} / tháng</div>')
             
@@ -396,5 +400,5 @@ for index, (i, row) in enumerate(f.head(50).iterrows()):
             # 3. Khung Copy nhanh
             st.code(copy_text, language="text")
             
-            # Link Zalo thô cho từng căn biệt thự
+            # Link Zalo riêng cho từng biệt thự
             st.html(f'<a href="https://zalo.me/{PHONE_NUMBER}" target="_blank" class="card-action-btn">💬 Gửi yêu cầu tư vấn căn này</a>')
