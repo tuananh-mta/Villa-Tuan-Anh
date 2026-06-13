@@ -260,7 +260,7 @@ st.html(f'''
 <div class="hero-profile">
     <img src="{AVATAR_URL}" class="profile-avatar" alt="Avatar">
     <div class="profile-name">Tuấn Anh Villa</div>
-    <div class="profile-tag">Chuyên gia Môi giới & Marketing Biệt thự / Villa Quận 2</div>
+    <div class="profile-tag">Chuyên gia Môi giới Villa / Căn Hộ / Mặt Bằng KD / Văn Phòng Quận 2</div>
     <div class="cta-container">
         <a href="tel:{PHONE_NUMBER}" class="cta-button">📞 Gọi ngay</a>
         <a href="https://zalo.me/{PHONE_NUMBER}" target="_blank" class="cta-button" style="background-color: #0068ff; color: #ffffff !important;">💬 Liên hệ Zalo</a>
