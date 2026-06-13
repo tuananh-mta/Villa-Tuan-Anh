@@ -10,7 +10,7 @@ from google.oauth2.service_account import Credentials
 # =============================
 PHONE_NUMBER = "0909108814"
 # Anh thay link ảnh avatar mới của anh vào giữa 2 dấu ngoặc kép dưới đây:
-AVATAR_URL = "https://ibb.co/9k8S5p6z" 
+AVATAR_URL = "https://i.ibb.co/DHVT21hs/471499443-122201836538216145-2788071352566679431-n-1.jpg" 
 
 # =============================
 # 1. CẤU HÌNH GIAO DIỆN & STYLE TAILWIND (NEXT.JS)
@@ -185,7 +185,7 @@ st.html(f'''
 <div class="hero-profile">
     <img src="{AVATAR_URL}" class="profile-avatar" alt="Avatar">
     <div class="profile-name">Tuấn Anh Villa</div>
-    <div class="profile-tag">Chuyên gia Môi giới Biệt thự / Villa / Căn Hộ Thảo Điền</div>
+    <div class="profile-tag">Chuyên gia Môi giới Villa / Căn Hộ / Mặt Bằng KD / Văn Phòng tại Thảo Điền</div>
     <div class="cta-container">
         <a href="tel:{PHONE_NUMBER}" class="cta-button">📞 Gọi ngay</a>
         <a href="https://zalo.me/{PHONE_NUMBER}" target="_blank" class="cta-button" style="background-color: #0068ff;">💬 Liên hệ Zalo</a>
