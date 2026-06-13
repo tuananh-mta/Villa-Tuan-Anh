@@ -9,7 +9,6 @@ from google.oauth2.service_account import Credentials
 # CẤU HÌNH THÔNG TIN THƯƠNG HIỆU
 # =============================
 PHONE_NUMBER = "0909108814"
-# Đã cập nhật link ảnh đại diện mới của anh
 AVATAR_URL = "https://i.ibb.co/DHVT21hs/471499443-122201836538216145-2788071352566679431-n-1.jpg"
 
 # =============================
@@ -49,7 +48,39 @@ div[data-testid="stVerticalBlockBorderWrapper"]:hover {
     border-color: #f97316 !important;
 }
 
-/* ÉP TOÀN BỘ CHỮ BÊN TRONG CARD SẢN PHẨM VÀ CÁC THÀNH PHẦN KHÁC SANG MÀU TRẮNG TINH */
+/* ========================================================= */
+/* ÉP TOÀN BỘ CHỮ Ở KHU VỰC BỘ LỌC & CARD SẢN PHẨM SANG MÀU TRẮNG TINH */
+/* ========================================================= */
+/* 1. Nhuộm trắng chữ tiêu đề bộ lọc (label) và chữ ghi chú */
+.stWidgetFormLabel label, 
+div[data-testid="stMarkdownContainer"] p, 
+div[data-testid="stWidgetLabel"] p,
+label[data-testid="stWidgetLabel"] {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+
+/* 2. Nhuộm trắng chữ hiển thị bên trong ô Selectbox đã chọn */
+div[data-baseweb="select"] div {
+    color: #ffffff !important;
+}
+
+/* 3. Nhuộm trắng chữ bên trong ô gõ tìm kiếm TextInput */
+.stTextInput input {
+    color: #ffffff !important;
+}
+
+/* 4. Nhuộm trắng chữ của các ô Checkbox */
+div[data-testid="stCheckbox"] p {
+    color: #ffffff !important;
+}
+
+/* 5. Nhuộm trắng các số hiển thị trên thanh kéo Slider giá */
+div[data-testid="stSlider"] span {
+    color: #ffffff !important;
+}
+
+/* Nhuộm trắng chữ thuộc tính bên trong Card sản phẩm */
 div[data-testid="stVerticalBlockBorderWrapper"] p,
 div[data-testid="stVerticalBlockBorderWrapper"] span,
 div[data-testid="stVerticalBlockBorderWrapper"] label,
@@ -57,7 +88,6 @@ div[data-testid="stVerticalBlockBorderWrapper"] li,
 div[data-testid="stVerticalBlockBorderWrapper"] div,
 .stMarkdown p, .stMarkdown span, .stMarkdown li {
     color: #ffffff !important;
-    font-weight: 500 !important;
 }
 
 /* Tiêu đề tên căn nhà (H4) và tiêu đề kết quả (H3) màu trắng đậm nổi bật */
@@ -66,16 +96,14 @@ div[data-testid="stVerticalBlockBorderWrapper"] h4, h3, h2, h1, .stMarkdown h4 {
     font-weight: 700 !important;
 }
 
-/* Tùy biến ô Input và Selectbox */
+/* Tùy biến ô Input và Selectbox (Nền tối viền xám đen) */
 .stTextInput input, .stSelectbox div[data-baseweb="select"] {
-    background-color: #09090b !important;
+    background-color: #18181b !important;
     border: 1px solid #27272a !important;
     border-radius: 0.5rem !important;
-    color: #fafafa !important;
 }
-.stTextInput input:focus {
+.stTextInput input:focus, .stSelectbox div[data-baseweb="select"]:focus {
     border-color: #f97316 !important;
-    box-shadow: 0 0 0 1px #f97316 !important;
 }
 
 /* Thiết kế phần Header cố định (Sticky Navigation) */
@@ -168,7 +196,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] h4, h3, h2, h1, .stMarkdown h4 {
 .badge-price {
     font-size: 1.125rem;
     font-weight: 700;
-    color: #f97316 !important; /* Giữ màu cam thương hiệu nổi bật riêng cho giá tiền */
+    color: #f97316 !important; 
     margin-bottom: 0.5rem;
 }
 
