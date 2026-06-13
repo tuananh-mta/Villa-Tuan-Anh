@@ -175,8 +175,8 @@ st.html(custom_css)
 # Hiển thị Header cố định
 st.html('''
 <div class="custom-header">
-    <div class="header-title">🏢 BĐS Trong Tầm Tay</div>
-    <div style="color: #a1a1aa; font-size: 0.875rem;">Alliance Real Estate 🌙</div>
+    <div class="header-title">🏢Chuyên BĐS Thảo Điền </div>
+    <div style="color: #a1a1aa; font-size: 0.875rem;">Real Estate 🌙</div>
 </div>
 ''')
 
@@ -185,7 +185,7 @@ st.html(f'''
 <div class="hero-profile">
     <img src="{AVATAR_URL}" class="profile-avatar" alt="Avatar">
     <div class="profile-name">Tuấn Anh Villa</div>
-    <div class="profile-tag">Chuyên gia Môi giới & Marketing Biệt thự / Villa Quận 2</div>
+    <div class="profile-tag">Chuyên gia Môi giới Biệt thự / Villa / Căn Hộ Thảo Điền</div>
     <div class="cta-container">
         <a href="tel:{PHONE_NUMBER}" class="cta-button">📞 Gọi ngay</a>
         <a href="https://zalo.me/{PHONE_NUMBER}" target="_blank" class="cta-button" style="background-color: #0068ff;">💬 Liên hệ Zalo</a>
