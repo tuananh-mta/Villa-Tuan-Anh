@@ -10,7 +10,7 @@ from google.oauth2.service_account import Credentials
 # =============================
 PHONE_NUMBER = "0909108814"
 # Anh thay link ảnh avatar mới của anh vào giữa 2 dấu ngoặc kép dưới đây:
-AVATAR_URL = "https://res.cloudinary.com/dbv796w60/image/upload/v1711181775/avatar_linh.jpg" 
+AVATAR_URL = "https://i.ibb.co/DHVT21hs/471499443-122201836538216145-2788071352566679431-n-1.jpg" 
 
 # =============================
 # 1. CẤU HÌNH GIAO DIỆN & STYLE TAILWIND (NEXT.JS)
