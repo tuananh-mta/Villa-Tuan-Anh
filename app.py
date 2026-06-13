@@ -186,7 +186,7 @@ if df_raw.empty:
 
 
 # =============================
-# 3. MAPPING CỘT & CLEANING (Giữ nguyên logic gốc của bạn)
+# 3. MAPPING CỘT & CLEANING
 # =============================
 df = df_raw.copy()
 COL_TYPE = df.columns[1]      # Cột B: Loại hình
@@ -229,7 +229,9 @@ df["furniture"] = df[COL_FURNI_I].apply(process_furni)
 
 df = df.dropna(subset=["status_label"])
 
-combined_text = df.astype(str).apply(lambda x: ' '.join(x), axis=1).str.lower()
+# --- ĐOẠN SỬA LỖI TẠI ĐÂY ---
+# Chuyển lower trực tiếp trong lambda khi nối chuỗi từng dòng để tránh lỗi xử lý của Series Pandas
+combined_text = df.astype(str).apply(lambda x: ' '.join(x).lower(), axis=1)
 df["pool"] = combined_text.str.contains("hồ bơi|bể bơi", na=False)
 df["garden"] = combined_text.str.contains("sân vườn", na=False)
 
