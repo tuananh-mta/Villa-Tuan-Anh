@@ -229,11 +229,11 @@ df["furniture"] = df[COL_FURNI_I].apply(process_furni)
 
 df = df.dropna(subset=["status_label"])
 
-# --- ĐOẠN SỬA LỖI TẠI ĐÂY ---
-# Chuyển lower trực tiếp trong lambda khi nối chuỗi từng dòng để tránh lỗi xử lý của Series Pandas
-combined_text = df.astype(str).apply(lambda x: ' '.join(x).lower(), axis=1)
-df["pool"] = combined_text.str.contains("hồ bơi|bể bơi", na=False)
-df["garden"] = combined_text.str.contains("sân vườn", na=False)
+# --- ĐOẠN SỬA LỖI TRIỆT ĐỂ KHÔNG DÙNG LAMBDA THEO HÀNG ---
+# Gộp toàn bộ các cột lại bằng cách ép kiểu chuỗi trực tiếp từng cột giúp tối ưu tốc độ và tránh lỗi Series dữ liệu rỗng
+combined_series = df.fillna("").astype(str).agg(" ".join, axis=1).str.lower()
+df["pool"] = combined_series.str.contains("hồ bơi|bể bơi", na=False)
+df["garden"] = combined_series.str.contains("sân vườn", na=False)
 
 
 # =============================
