@@ -30,11 +30,62 @@ custom_css = """
 div[data-testid="stToolbar"] {display: none;}
 .block-container {padding-top: 0rem; padding-bottom: 3rem;}
 
-/* Cấu hình màu nền Dark Mode sâu (Zinc 950) */
+/* Cấu hình màu nền Dark Mode sâu toàn trang (Zinc 950) */
 .stApp {
     background-color: #09090b !important;
 }
 
+/* ========================================================= */
+/* CẤU HÌNH NỀN ĐEN - CHỮ TRẮNG CHO KHU VỰC BỘ LỌC NÂNG CAO */
+/* ========================================================= */
+
+/* 1. Ép toàn bộ chữ tiêu đề bộ lọc (label) sang màu trắng tinh */
+.stWidgetFormLabel label, 
+div[data-testid="stMarkdownContainer"] p, 
+div[data-testid="stWidgetLabel"] p,
+label[data-testid="stWidgetLabel"] {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+
+/* 2. Cấu hình ô nhập liệu (TextInput) và ô chọn (Selectbox) nền đen sâu, viền xám */
+.stTextInput input, div[data-baseweb="select"] {
+    background-color: #09090b !important;
+    border: 1px solid #27272a !important;
+    border-radius: 0.5rem !important;
+}
+
+/* 3. Ép màu chữ bên trong ô chọn Selectbox và ô nhập TextInput thành màu trắng */
+div[data-baseweb="select"] div, .stTextInput input {
+    color: #ffffff !important;
+}
+
+/* 4. Tùy biến danh sách menu thả xuống (Dropdown) khi bấm vào Selectbox cũng có nền đen chữ trắng */
+div[data-baseweb="popover"] ul {
+    background-color: #09090b !important;
+    border: 1px solid #27272a !important;
+}
+div[data-baseweb="popover"] li {
+    color: #ffffff !important;
+    background-color: #09090b !important;
+}
+div[data-baseweb="popover"] li:hover {
+    background-color: #27272a !important;
+}
+
+/* 5. Cấu hình chữ trắng cho các ô Checkbox hồ bơi, sân vườn */
+div[data-testid="stCheckbox"] p {
+    color: #ffffff !important;
+}
+
+/* 6. Cấu hình chữ trắng cho các số hiển thị trên thanh kéo Slider giá */
+div[data-testid="stSlider"] span {
+    color: #ffffff !important;
+}
+
+/* ========================================================= */
+/* CẤU HÌNH CARD SẢN PHẨM BIỆT THỰ */
+/* ========================================================= */
 /* Khung viền và bo góc cho các Container/Card sản phẩm */
 div[data-testid="stVerticalBlockBorderWrapper"] {
     background-color: #18181b !important;
@@ -46,38 +97,6 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
 }
 div[data-testid="stVerticalBlockBorderWrapper"]:hover {
     border-color: #f97316 !important;
-}
-
-/* ========================================================= */
-/* ÉP TOÀN BỘ CHỮ Ở KHU VỰC BỘ LỌC & CARD SẢN PHẨM SANG MÀU TRẮNG TINH */
-/* ========================================================= */
-/* 1. Nhuộm trắng chữ tiêu đề bộ lọc (label) và chữ ghi chú */
-.stWidgetFormLabel label, 
-div[data-testid="stMarkdownContainer"] p, 
-div[data-testid="stWidgetLabel"] p,
-label[data-testid="stWidgetLabel"] {
-    color: #ffffff !important;
-    font-weight: 600 !important;
-}
-
-/* 2. Nhuộm trắng chữ hiển thị bên trong ô Selectbox đã chọn */
-div[data-baseweb="select"] div {
-    color: #ffffff !important;
-}
-
-/* 3. Nhuộm trắng chữ bên trong ô gõ tìm kiếm TextInput */
-.stTextInput input {
-    color: #ffffff !important;
-}
-
-/* 4. Nhuộm trắng chữ của các ô Checkbox */
-div[data-testid="stCheckbox"] p {
-    color: #ffffff !important;
-}
-
-/* 5. Nhuộm trắng các số hiển thị trên thanh kéo Slider giá */
-div[data-testid="stSlider"] span {
-    color: #ffffff !important;
 }
 
 /* Nhuộm trắng chữ thuộc tính bên trong Card sản phẩm */
@@ -94,16 +113,6 @@ div[data-testid="stVerticalBlockBorderWrapper"] div,
 div[data-testid="stVerticalBlockBorderWrapper"] h4, h3, h2, h1, .stMarkdown h4 {
     color: #ffffff !important;
     font-weight: 700 !important;
-}
-
-/* Tùy biến ô Input và Selectbox (Nền tối viền xám đen) */
-.stTextInput input, .stSelectbox div[data-baseweb="select"] {
-    background-color: #18181b !important;
-    border: 1px solid #27272a !important;
-    border-radius: 0.5rem !important;
-}
-.stTextInput input:focus, .stSelectbox div[data-baseweb="select"]:focus {
-    border-color: #f97316 !important;
 }
 
 /* Thiết kế phần Header cố định (Sticky Navigation) */
