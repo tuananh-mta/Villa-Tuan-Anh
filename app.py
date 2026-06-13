@@ -35,58 +35,7 @@ div[data-testid="stToolbar"] {display: none;}
     background-color: #09090b !important;
 }
 
-/* ========================================================= */
-/* CẤU HÌNH NỀN ĐEN - CHỮ TRẮNG CHO KHU VỰC BỘ LỌC NÂNG CAO */
-/* ========================================================= */
-
-/* 1. Ép toàn bộ chữ tiêu đề bộ lọc (label) sang màu trắng tinh */
-.stWidgetFormLabel label, 
-div[data-testid="stMarkdownContainer"] p, 
-div[data-testid="stWidgetLabel"] p,
-label[data-testid="stWidgetLabel"] {
-    color: #ffffff !important;
-    font-weight: 600 !important;
-}
-
-/* 2. Cấu hình ô nhập liệu (TextInput) và ô chọn (Selectbox) nền đen sâu, viền xám */
-.stTextInput input, div[data-baseweb="select"] {
-    background-color: #09090b !important;
-    border: 1px solid #27272a !important;
-    border-radius: 0.5rem !important;
-}
-
-/* 3. Ép màu chữ bên trong ô chọn Selectbox và ô nhập TextInput thành màu trắng */
-div[data-baseweb="select"] div, .stTextInput input {
-    color: #ffffff !important;
-}
-
-/* 4. Tùy biến danh sách menu thả xuống (Dropdown) khi bấm vào Selectbox cũng có nền đen chữ trắng */
-div[data-baseweb="popover"] ul {
-    background-color: #09090b !important;
-    border: 1px solid #27272a !important;
-}
-div[data-baseweb="popover"] li {
-    color: #ffffff !important;
-    background-color: #09090b !important;
-}
-div[data-baseweb="popover"] li:hover {
-    background-color: #27272a !important;
-}
-
-/* 5. Cấu hình chữ trắng cho các ô Checkbox hồ bơi, sân vườn */
-div[data-testid="stCheckbox"] p {
-    color: #ffffff !important;
-}
-
-/* 6. Cấu hình chữ trắng cho các số hiển thị trên thanh kéo Slider giá */
-div[data-testid="stSlider"] span {
-    color: #ffffff !important;
-}
-
-/* ========================================================= */
-/* CẤU HÌNH CARD SẢN PHẨM BIỆT THỰ */
-/* ========================================================= */
-/* Khung viền và bo góc cho các Container/Card sản phẩm */
+# Khung viền và bo góc cho các Container/Card sản phẩm
 div[data-testid="stVerticalBlockBorderWrapper"] {
     background-color: #18181b !important;
     border: 1px solid #27272a !important;
@@ -99,7 +48,78 @@ div[data-testid="stVerticalBlockBorderWrapper"]:hover {
     border-color: #f97316 !important;
 }
 
-/* Nhuộm trắng chữ thuộc tính bên trong Card sản phẩm */
+/* ========================================================= */
+/* SỬA LỖI TRANG TRÍ NỀN ĐEN - CHỮ TRẮNG CHO KHU VỰC BỘ LỌC */
+/* ========================================================= */
+
+/* Ép tiêu đề bộ lọc (nhãn phía trên) thành chữ trắng */
+.stWidgetFormLabel label, 
+div[data-testid="stMarkdownContainer"] p, 
+div[data-testid="stWidgetLabel"] p,
+label[data-testid="stWidgetLabel"] {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+
+/* Ép ô nhập TextInput (Tìm kiếm theo đường) sang nền đen viền xám chữ trắng */
+.stTextInput input {
+    background-color: #18181b !important;
+    border: 1px solid #27272a !important;
+    color: #ffffff !important;
+    border-radius: 0.5rem !important;
+}
+
+/* SỬA TRIỆT ĐỂ SELECTBOX: Ép toàn bộ các lớp div từ ngoài vào trong của Selectbox thành NỀN TỐI */
+.stSelectbox div[data-baseweb="select"],
+.stSelectbox div[data-baseweb="select"] > div,
+.stSelectbox div[data-baseweb="select"] div[data-testid="stSelectboxSelectedValue"] {
+    background-color: #18181b !important;
+    color: #ffffff !important;
+    border-radius: 0.5rem !important;
+}
+
+/* Định dạng viền của Selectbox khi đóng */
+.stSelectbox div[data-baseweb="select"] {
+    border: 1px solid #27272a !important;
+}
+
+/* Ép màu chữ hiển thị khi CHƯA sổ xuống và ĐÃ chọn thành trắng tinh */
+div[data-testid="stSelectboxSelectedValue"] span, 
+div[data-baseweb="select"] span {
+    color: #ffffff !important;
+}
+
+/* Thay đổi màu mũi tên chỉ xuống của Selectbox thành màu trắng để dễ nhìn */
+div[data-baseweb="select"] svg {
+    fill: #ffffff !important;
+}
+
+/* Danh sách Menu thả xuống (Dropdown) khi click vào */
+div[data-baseweb="popover"] ul {
+    background-color: #18181b !important;
+    border: 1px solid #27272a !important;
+}
+div[data-baseweb="popover"] li {
+    color: #ffffff !important;
+    background-color: #18181b !important;
+}
+div[data-baseweb="popover"] li:hover {
+    background-color: #27272a !important;
+}
+
+/* Ô Checkbox */
+div[data-testid="stCheckbox"] p {
+    color: #ffffff !important;
+}
+
+/* Thanh kéo Slider giá */
+div[data-testid="stSlider"] span {
+    color: #ffffff !important;
+}
+
+/* ========================================================= */
+/* CHỮ VÀ TIÊU ĐỀ TRONG CARD VILLA */
+/* ========================================================= */
 div[data-testid="stVerticalBlockBorderWrapper"] p,
 div[data-testid="stVerticalBlockBorderWrapper"] span,
 div[data-testid="stVerticalBlockBorderWrapper"] label,
@@ -109,13 +129,12 @@ div[data-testid="stVerticalBlockBorderWrapper"] div,
     color: #ffffff !important;
 }
 
-/* Tiêu đề tên căn nhà (H4) và tiêu đề kết quả (H3) màu trắng đậm nổi bật */
 div[data-testid="stVerticalBlockBorderWrapper"] h4, h3, h2, h1, .stMarkdown h4 {
     color: #ffffff !important;
     font-weight: 700 !important;
 }
 
-/* Thiết kế phần Header cố định (Sticky Navigation) */
+/* Thiết kế phần Header cố định */
 .custom-header {
     position: fixed;
     top: 0;
@@ -138,7 +157,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] h4, h3, h2, h1, .stMarkdown h4 {
     color: #fafafa;
 }
 
-/* Thiết kế phần Profile Banner (Hero Section màu cam chuyển sắc) */
+/* Thiết kế phần Profile Banner màu cam */
 .hero-profile {
     background: linear-gradient(135deg, #f97316 0%, #fdba74 100%);
     border-radius: 1rem;
@@ -151,7 +170,6 @@ div[data-testid="stVerticalBlockBorderWrapper"] h4, h3, h2, h1, .stMarkdown h4 {
     align-items: center;
     text-align: center;
 }
-/* Giữ chữ trên nền banner cam có màu tối để tương phản tốt, dễ đọc */
 .hero-profile div, .hero-profile p, .hero-profile span {
     color: #09090b !important; 
     font-weight: 600 !important;
@@ -201,7 +219,6 @@ div[data-testid="stVerticalBlockBorderWrapper"] h4, h3, h2, h1, .stMarkdown h4 {
     opacity: 0.9;
 }
 
-/* Custom cho các Badge / Tag thông tin */
 .badge-price {
     font-size: 1.125rem;
     font-weight: 700;
@@ -209,7 +226,6 @@ div[data-testid="stVerticalBlockBorderWrapper"] h4, h3, h2, h1, .stMarkdown h4 {
     margin-bottom: 0.5rem;
 }
 
-/* Thẻ link bọc toàn bộ nút trong Card biệt thự */
 .card-action-btn {
     display: block;
     text-align: center;
@@ -234,7 +250,7 @@ st.html(custom_css)
 # Hiển thị Header cố định
 st.html('''
 <div class="custom-header">
-    <div class="header-title">🏢 BĐS Trong Tầm Tay</div>
+    <div class="header-title">🏢 BĐS Thảo Điền</div>
     <div style="color: #a1a1aa; font-size: 0.875rem;">Alliance Real Estate 🌙</div>
 </div>
 ''')
