@@ -6,13 +6,20 @@ import gspread
 from google.oauth2.service_account import Credentials
 
 # =============================
+# CẤU HÌNH THÔNG TIN THƯƠNG HIỆU (ANH SỬA THÔNG TIN TẠI ĐÂY)
+# =============================
+PHONE_NUMBER = "0909108814"
+# Anh thay link ảnh avatar mới của anh vào giữa 2 dấu ngoặc kép dưới đây:
+AVATAR_URL = "https://ibb.co/9k8S5p6z" 
+
+# =============================
 # 1. CẤU HÌNH GIAO DIỆN & STYLE TAILWIND (NEXT.JS)
 # =============================
 st.set_page_config(
     page_title="Giỏ Hàng Villa Tuấn Anh",
     page_icon="🏡",
     layout="wide",
-    initial_sidebar_state="collapsed" # Mặc định thu gọn sidebar để xem trên Mobile đẹp hơn
+    initial_sidebar_state="collapsed"
 )
 
 # Nhúng CSS tùy biến cao cấp mô phỏng bdsttt.vercel.app
@@ -121,13 +128,18 @@ div[data-testid="stVerticalBlockBorderWrapper"]:hover {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.5rem 1.25rem;
+    padding: 0.6rem 1.5rem;
     border-radius: 9999px;
     font-size: 0.875rem;
     font-weight: 600;
-    text-decoration: none;
+    text-decoration: none !important;
     background-color: #09090b;
     color: #ffffff !important;
+    transition: all 0.2s;
+}
+.cta-button:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
 }
 
 /* Custom cho các Badge / Tag thông tin */
@@ -136,6 +148,25 @@ div[data-testid="stVerticalBlockBorderWrapper"]:hover {
     font-weight: 700;
     color: #f97316;
     margin-bottom: 0.5rem;
+}
+
+/* Thẻ link bọc toàn bộ nút trong Card biệt thự */
+.card-action-btn {
+    display: block;
+    text-align: center;
+    width: 100%;
+    background-color: #f97316;
+    color: #09090b !important;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 0.6rem;
+    border-radius: 0.5rem;
+    text-decoration: none !important;
+    margin-top: 0.75rem;
+    transition: all 0.2s;
+}
+.card-action-btn:hover {
+    background-color: #ea580c;
 }
 </style>
 """
@@ -149,15 +180,15 @@ st.html('''
 </div>
 ''')
 
-# Hiển thị Banner Profile của Tuấn Anh
-st.html('''
+# Hiển thị Banner Profile với thông tin đã cập nhật và sửa lỗi nút bấm
+st.html(f'''
 <div class="hero-profile">
-    <img src="https://res.cloudinary.com/dbv796w60/image/upload/v1711181775/avatar_linh.jpg" class="profile-avatar" alt="Avatar">
+    <img src="{AVATAR_URL}" class="profile-avatar" alt="Avatar">
     <div class="profile-name">Tuấn Anh Villa</div>
     <div class="profile-tag">Chuyên gia Môi giới & Marketing Biệt thự / Villa Quận 2</div>
     <div class="cta-container">
-        <a href="tel:0909108814" class="cta-button">📞 Gọi ngay</a>
-        <a href="https://zalo.me/0909108814" class="cta-button" style="background-color: #0068ff;">💬 Liên hệ Zalo</a>
+        <a href="tel:{PHONE_NUMBER}" class="cta-button">📞 Gọi ngay</a>
+        <a href="https://zalo.me/{PHONE_NUMBER}" target="_blank" class="cta-button" style="background-color: #0068ff;">💬 Liên hệ Zalo</a>
     </div>
 </div>
 ''')
@@ -229,19 +260,17 @@ df["furniture"] = df[COL_FURNI_I].apply(process_furni)
 
 df = df.dropna(subset=["status_label"])
 
-# --- ĐOẠN SỬA LỖI TRIỆT ĐỂ KHÔNG DÙNG LAMBDA THEO HÀNG ---
-# Gộp toàn bộ các cột lại bằng cách ép kiểu chuỗi trực tiếp từng cột giúp tối ưu tốc độ và tránh lỗi Series dữ liệu rỗng
+# Gộp dữ liệu cột an toàn chống lỗi Series
 combined_series = df.fillna("").astype(str).agg(" ".join, axis=1).str.lower()
 df["pool"] = combined_series.str.contains("hồ bơi|bể bơi", na=False)
 df["garden"] = combined_series.str.contains("sân vườn", na=False)
 
 
 # =============================
-# 4. BỘ LỌC HIỆN ĐẠI (ĐƯA RA TRANG CHÍNH THAY VÌ SIDEBAR)
+# 4. BỘ LỌC HIỆN ĐẠI
 # =============================
 st.markdown("### 🔍 Bộ lọc tìm kiếm nâng cao")
 
-# Chia thanh tìm kiếm và bộ lọc thành các cột thông minh trên trang chính
 c1, c2, c3 = st.columns([2, 1, 1])
 with c1:
     search_address = st.text_input("📍 Tìm kiếm theo tên đường hoặc địa chỉ...", placeholder="Ví dụ: Thảo Điền, Đường số 10...")
@@ -258,7 +287,6 @@ with c5:
 with c6:
     furni_filter = st.selectbox("🪑 Nội thất", ["Tất cả", "Full NT", "KNT", "NTCB"])
 
-# Cột checkbox phụ
 cc1, cc2, cc3 = st.columns([1, 1, 4])
 with cc1:
     filter_pool = st.checkbox("🏊 Có hồ bơi")
@@ -299,7 +327,6 @@ if filter_garden: f = f[f["garden"] == True]
 # =============================
 st.markdown(f"### 📋 Kết quả tìm kiếm ({len(f)} căn phù hợp)")
 
-# Chia danh sách thành lưới 2 cột giống giao diện bdsttt.vercel.app
 grid_columns = st.columns(2)
 
 for index, (i, row) in enumerate(f.head(50).iterrows()):
@@ -316,11 +343,10 @@ for index, (i, row) in enumerate(f.head(50).iterrows()):
 📌 Trạng thái: {status_display}
 {"🏊 Hồ bơi" if row['pool'] else ""} {"🌿 Sân vườn" if row['garden'] else ""}""".strip()
 
-    # Chọn cột luân phiên (Cột 0 hoặc Cột 1) để rải đều Card sản phẩm
     with grid_columns[index % 2]:
-        with st.container(border=True): # Tạo viền và màu nền Zinc-900 thông qua CSS
+        with st.container(border=True):
             
-            # 1. Hiển thị hình ảnh dạng Slider/Tab gọn gàng
+            # 1. Hình ảnh biệt thự
             raw_img_links = str(row[COL_IMAGE_O]).strip()
             if raw_img_links and raw_img_links.lower() != "nan":
                 list_links = [link.strip() for link in raw_img_links.split(",") if link.strip().startswith("http")]
@@ -333,14 +359,12 @@ for index, (i, row) in enumerate(f.head(50).iterrows()):
                 elif len(list_links) == 1:
                     st.image(list_links[0], use_container_width=True)
             else:
-                # Ảnh mặc định nếu căn hộ không có ảnh
                 st.image("https://images.unsplash.com/photo-1600596542815-ffad4c1539a9", use_container_width=True)
             
-            # 2. Thông tin chi tiết sản phẩm
+            # 2. Thông tin
             st.markdown(f"#### 🏠 {display_name}")
             st.html(f'<div class="badge-price">💰 {price_val} / tháng</div>')
             
-            # Sắp xếp các thông số kỹ thuật dạng cột nhỏ bên trong Card
             info_c1, info_c2 = st.columns(2)
             with info_c1:
                 st.markdown(f"📐 **Diện tích:** {int(row['area']) if pd.notna(row['area']) else 'N/A'} m²")
@@ -351,8 +375,8 @@ for index, (i, row) in enumerate(f.head(50).iterrows()):
                 st.markdown(f"🏊 **Hồ bơi:** {'Có' if row['pool'] else 'Không'}")
                 st.markdown(f"🌿 **Sân vườn:** {'Có' if row['garden'] else 'Không'}")
             
-            # 3. Khung Copy nhanh cho Môi giới gửi khách hàng
+            # 3. Khung Copy nhanh
             st.code(copy_text, language="text")
             
-            # Nút CTA riêng cho từng căn biệt thự kết nối nhanh
-            st.link_button("💬 Gửi yêu cầu tư vấn căn này", f"https://zalo.me/0909108814", use_container_width=True)
+            # Sửa lỗi nút liên hệ Zalo cho từng căn biệt thự bằng liên kết HTML thô
+            st.html(f'<a href="https://zalo.me/{PHONE_NUMBER}" target="_blank" class="card-action-btn">💬 Gửi yêu cầu tư vấn căn này</a>')
