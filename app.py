@@ -6,11 +6,11 @@ import gspread
 from google.oauth2.service_account import Credentials
 
 # =============================
-# CẤU HÌNH THÔNG TIN THƯƠNG HIỆU (ANH SỬA THÔNG TIN TẠI ĐÂY)
+# CẤU HÌNH THÔNG TIN THƯƠNG HIỆU
 # =============================
 PHONE_NUMBER = "0909108814"
 # Anh thay link ảnh avatar mới của anh vào giữa 2 dấu ngoặc kép dưới đây:
-AVATAR_URL = "https://i.ibb.co/DHVT21hs/471499443-122201836538216145-2788071352566679431-n-1.jpg" 
+AVATAR_URL = "https://res.cloudinary.com/dbv796w60/image/upload/v1711181775/avatar_linh.jpg" 
 
 # =============================
 # 1. CẤU HÌNH GIAO DIỆN & STYLE TAILWIND (NEXT.JS)
@@ -47,6 +47,21 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
 }
 div[data-testid="stVerticalBlockBorderWrapper"]:hover {
     border-color: #f97316 !important;
+}
+
+/* ÉP TOÀN BỘ CHỮ BÊN TRONG CARD SẢN PHẨM SANG MÀU TRẮNG SÁNG */
+div[data-testid="stVerticalBlockBorderWrapper"] p,
+div[data-testid="stVerticalBlockBorderWrapper"] span,
+div[data-testid="stVerticalBlockBorderWrapper"] label,
+div[data-testid="stVerticalBlockBorderWrapper"] li {
+    color: #ffffff !important;
+    font-weight: 500 !important;
+}
+
+/* Tiêu đề tên căn nhà (H4) màu trắng đậm nổi bật */
+div[data-testid="stVerticalBlockBorderWrapper"] h4 {
+    color: #ffffff !important;
+    font-weight: 700 !important;
 }
 
 /* Tùy biến ô Input và Selectbox */
@@ -97,6 +112,9 @@ div[data-testid="stVerticalBlockBorderWrapper"]:hover {
     align-items: center;
     text-align: center;
 }
+.hero-profile div, .hero-profile p {
+    color: #09090b !important; /* Đảm bảo chữ trên nền banner cam vẫn có màu đen để dễ đọc */
+}
 .profile-avatar {
     width: 90px;
     height: 90px;
@@ -109,7 +127,7 @@ div[data-testid="stVerticalBlockBorderWrapper"]:hover {
     font-size: 1.5rem;
     font-weight: 800;
     margin: 0;
-    color: #09090b;
+    color: #09090b !important;
 }
 .profile-tag {
     font-size: 0.875rem;
@@ -146,7 +164,7 @@ div[data-testid="stVerticalBlockBorderWrapper"]:hover {
 .badge-price {
     font-size: 1.125rem;
     font-weight: 700;
-    color: #f97316;
+    color: #f97316 !important; /* Giữ nguyên màu cam thương hiệu cho phần giá */
     margin-bottom: 0.5rem;
 }
 
@@ -175,20 +193,20 @@ st.html(custom_css)
 # Hiển thị Header cố định
 st.html('''
 <div class="custom-header">
-    <div class="header-title">🏢Chuyên BĐS Thảo Điền </div>
-    <div style="color: #a1a1aa; font-size: 0.875rem;">Real Estate 🌙</div>
+    <div class="header-title">🏢 BĐS Trong Tầm Tay</div>
+    <div style="color: #a1a1aa; font-size: 0.875rem;">Alliance Real Estate 🌙</div>
 </div>
 ''')
 
-# Hiển thị Banner Profile với thông tin đã cập nhật và sửa lỗi nút bấm
+# Hiển thị Banner Profile
 st.html(f'''
 <div class="hero-profile">
     <img src="{AVATAR_URL}" class="profile-avatar" alt="Avatar">
     <div class="profile-name">Tuấn Anh Villa</div>
-    <div class="profile-tag">Chuyên gia Môi giới Villa / Căn Hộ / Mặt Bằng KD / Văn Phòng tại Thảo Điền</div>
+    <div class="profile-tag">Chuyên gia Môi giới & Marketing Biệt thự / Villa Quận 2</div>
     <div class="cta-container">
         <a href="tel:{PHONE_NUMBER}" class="cta-button">📞 Gọi ngay</a>
-        <a href="https://zalo.me/{PHONE_NUMBER}" target="_blank" class="cta-button" style="background-color: #0068ff;">💬 Liên hệ Zalo</a>
+        <a href="https://zalo.me/{PHONE_NUMBER}" target="_blank" class="cta-button" style="background-color: #0068ff; color: #ffffff !important;">💬 Liên hệ Zalo</a>
     </div>
 </div>
 ''')
@@ -378,5 +396,5 @@ for index, (i, row) in enumerate(f.head(50).iterrows()):
             # 3. Khung Copy nhanh
             st.code(copy_text, language="text")
             
-            # Sửa lỗi nút liên hệ Zalo cho từng căn biệt thự bằng liên kết HTML thô
+            # Link Zalo thô cho từng căn biệt thự
             st.html(f'<a href="https://zalo.me/{PHONE_NUMBER}" target="_blank" class="card-action-btn">💬 Gửi yêu cầu tư vấn căn này</a>')
